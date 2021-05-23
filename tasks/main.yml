@@ -1,0 +1,52 @@
+---
+- name: InfluxDB Repository (RedHat)
+  block:
+    - name: InfluxDB Repository GPG key
+      rpm_key:
+        key: https://repos.influxdata.com/influxdb.key
+        state: present
+
+    - name: InfluxDB Repository
+      yum_repository:
+        name: InfluxDB
+        description: InfluxDB
+        baseurl: https://repos.influxdata.com/rhel/8/x86_64/stable/
+        enabled: yes
+        gpgcheck : yes
+        gpgkey: https://repos.influxdata.com/influxdb.key
+  when:
+    - ansible_os_family == "RedHat"
+
+- name: Install package
+  package:
+    state: latest
+    name:
+      - telegraf
+  when:
+    - ansible_os_family != "Archlinux"
+
+- name: Install package (Arch Linux)
+  aur:
+    use: yay
+    state: present
+    name:
+      - telegraf
+  become: yes
+  become_user: aur_builder
+  when:
+    - ansible_os_family == "Archlinux"
+
+- name: Generate telegraf.conf file from template
+  template:
+    src: '{{ telegraf_config }}.j2'
+    dest: /etc/telegraf/telegraf.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Enable daemon
+  service:
+    name: telegraf
+    enabled: yes
+    state: started
+...
