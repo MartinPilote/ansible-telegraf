@@ -5,7 +5,7 @@ galaxy_info:
   author: Martin Pilote
   description: 'Ansible role to install Telegraf'
   repository: 'https://github.com/MartinPilote/ansible-telegraf'
-  license: 'BSD-3-Clause'
+  license: 'GPL-3.0-only'
   min_ansible_version: 2.4
   platforms:
   - name: 'Archlinux'
